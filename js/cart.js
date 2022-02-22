@@ -1,62 +1,69 @@
-var car = {};//Корзина
+var cart = {}; //корзина
+
 
 $.getJSON('goods.json', function (data) {
-    var goods = data;
-    // console.log(data);
+    var goods = data; //все товары в массиве
+    // console.log(goods);
     checkCart();
-    // console.log(cart);
-    showCart();//вывожу товары на страницу
+    //console.log(cart);
+    showCart(); //вывожу товары на страницу
+
     function showCart() {
-        var out = '';
-        for (var key in cart) {
-            out += '<button class="delete" data-art="' + key + '">x</button>';
-            out += '<img src="' + goods[key].image + '" width="48"> ';
-            out += goods[key].name;
-            out += '<button class="minus" data-art="' + key + '">-</button>';
-            out += cart[key];
-            out += '<button class="plus" data-art="' + key + '">+</button>';
-            out += cart[key] * goods[key].cost;
-            out += '<br>';
+        if ($.isEmptyObject(cart)) {
+            //корзина пуста
+            var out = 'Корзина пуста добавьте товар в корзину <a href="index.php">главная страница</a>';
+            $('.my-cart').html(out);
         }
-        $('.my-cart').html(out);
-        $('.plus').on('click', plusGoods);
-        $('.minus').on('click', minusGoods);
-        $('.delete').on('click', deleteGoods);
+        else {
+            var out = '';
+            for (var key in cart) {
+                out += '<button class="delete" data-art="' + key + '" >x</button>';
+                out += '<img src="' + goods[key].image + '" width="48">';
+                out += goods[key].name;
+                out += '<button class="minus" data-art="' + key + '">-</button>';
+                out += cart[key];
+                out += '<button class="plus" data-art="' + key + '">+</button>';
+                out += cart[key] * goods[key].cost;
+                out += '<br>';
+            }
+            $('.my-cart').html(out);
+            $('.plus').on('click', plusGoods);
+            $('.minus').on('click', minusGoods);
+            $('.delete').on('click', deleteGoods);
+        }
     }
+
     function plusGoods() {
-        //добавления товаров в корзину
         var articul = $(this).attr('data-art');
         cart[articul]++;
-        saveCartToLS(); //сохроняем корзину в LocalStorage
+        saveCartToLS(); //сохраняю корзину в localStorage
         showCart();
     }
 
     function minusGoods() {
-        //удаление товаров из корзины
         var articul = $(this).attr('data-art');
         if (cart[articul] > 1) {
-            cart[articul]--
+            cart[articul]--;
         }
         else {
             delete cart[articul];
         }
-        saveCartToLS();//сохроняем корзину в LocalStorage
+        saveCartToLS();//сохраняю корзину в localStorage
         showCart();
     }
-
 
     function deleteGoods() {
-        //удаление товаров из корзины
         var articul = $(this).attr('data-art');
         delete cart[articul];
-        saveCartToLS();//сохроняем корзину в LocalStorage
+        saveCartToLS();//сохраняю корзину в localStorage
         showCart();
     }
+
 
 });
 
 function checkCart() {
-    //проверка наличии корзины в locaStorage
+    //проверяю наличие корзины в localStorage;
     if (localStorage.getItem('cart') != null) {
         cart = JSON.parse(localStorage.getItem('cart'));
     }
